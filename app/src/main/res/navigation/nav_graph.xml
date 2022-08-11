@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/pokemonCardListFragment">
+
+    <fragment
+        android:id="@+id/pokemonCardListFragment"
+        android:name="com.example.pokedex.presentation.pokemoncardlist.PokemonCardListFragment"
+        tools:layout="@layout/fragment_pokemon_card_list" />
+
+    <fragment
+        android:id="@+id/pokemonDetailFragment"
+        android:name="com.example.pokedex.presentation.pokemondetail.PokemonDetailFragment"
+        tools:layout="@layout/fragment_pokemon_detail" />
+
+</navigation>

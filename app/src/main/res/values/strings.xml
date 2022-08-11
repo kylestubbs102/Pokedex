@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Pokedex</string>
+    <string name="pokedex_list_title">Pokedex</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_view_height">Height</string>
+    <string name="text_view_weight">Weight</string>
+    <string name="text_view_breeding">Breeding</string>
+    <string name="text_view_egg_cycle">Egg Cycles</string>
+    <string name="text_view_egg_groups">Egg Groups</string>
+    <string name="text_view_gender">Gender</string>
+    <string name="text_view_genderless">Genderless</string>
+    <string name="text_view_location">Location</string>
+    <string name="text_view_map_coordinates_unavailable">Map coordinates not provided in API.</string>
+    <string name="text_view_training">Training</string>
+    <string name="text_view_base_experience">Base EXP</string>
+    <string name="text_view_evolution_chain">Evolution Chain</string>
+    <string name="text_view_no_evolution_chain">No evolution chain found.</string>
+    <string name="text_view_min_level">Lvl %1d</string>
+    <string name="text_view_type_defenses">Type defenses</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="recycler_view_side_margin_20dp">20dp</dimen>
+    <dimen name="pokemon_card_item_horizontal_margin_5dp">5dp</dimen>
+    <dimen name="pokemon_card_item_vertical_margin_5dp">5dp</dimen>
+    <dimen name="recycler_view_pokedex_card_list_horizontal_margin_15dp">15dp</dimen>
+    <dimen name="image_view_pokeball_evolution_dimen">83dp</dimen>
+    <dimen name="image_view_pokemon_evolution_margin_top">3dp</dimen>
+    <dimen name="text_view_pokemon_evolution_margin_top">10dp</dimen>
+    <dimen name="image_view_pokemon_evolution_height">77dp</dimen>
+    <dimen name="text_view_evolution_label_size">16sp</dimen>
+</resources>
