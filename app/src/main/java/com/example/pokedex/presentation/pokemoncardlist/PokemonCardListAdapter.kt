@@ -7,13 +7,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import com.bumptech.glide.Glide
 import com.example.pokedex.databinding.PokemonCardItemBinding
+import com.example.pokedex.domain.interfaces.ImageLoader
 import com.example.pokedex.domain.model.PokemonCardInfo
 import com.example.pokedex.util.PokemonColorUtils
 import java.util.Locale
 
 class PokemonCardListAdapter(
+    private val imageLoader: ImageLoader,
     private val cardToDetailFragmentTransaction: (pokemonCardInfo: PokemonCardInfo) -> Unit
 ) : ListAdapter<PokemonCardInfo, PokemonCardListAdapter.PokemonCardViewHolder>(DIFF_CALLBACK) {
 
@@ -88,16 +89,15 @@ class PokemonCardListAdapter(
             pokemonCardInfo: PokemonCardInfo
         ) {
             binding.apply {
-                Glide
-                    .with(root.context)
-                    .load(pokemonCardInfo.imageUrl)
-                    .placeholder(CircularProgressDrawable(root.context).apply {
+                imageLoader.loadImage(
+                    url = pokemonCardInfo.imageUrl,
+                    imageView = imageViewPokemon,
+                    placeholder = CircularProgressDrawable(root.context).apply {
                         strokeWidth = 5f
                         centerRadius = 30f
                         start()
-                    })
-                    .error(com.google.android.material.R.drawable.mtrl_ic_error)
-                    .into(imageViewPokemon)
+                    }
+                )
             }
         }
 

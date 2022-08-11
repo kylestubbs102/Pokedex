@@ -119,6 +119,6 @@ class BaseStatBar(
         private const val MAX_STAT_VALUE_4 = 194
         private const val MAX_STAT_VALUE_5 = 250
         private const val MAX_STAT_VALUE_6 = 200
-        private const val MAX_STAT_VALUE_TOTAL = 1339
+        private const val MAX_STAT_VALUE_TOTAL = 1125
     }
 }

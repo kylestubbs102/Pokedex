@@ -1,7 +1,7 @@
-package com.example.pokedex.data.preferences
+package com.example.pokedex.data.interfaces_impl
 
 import android.content.SharedPreferences
-import com.example.pokedex.domain.preferences.AppPreferences
+import com.example.pokedex.domain.interfaces.AppPreferences
 
 class AppPreferencesImpl(
     private val sharedPreferences: SharedPreferences

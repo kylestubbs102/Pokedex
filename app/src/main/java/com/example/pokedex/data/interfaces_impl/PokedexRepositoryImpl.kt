@@ -1,4 +1,4 @@
-package com.example.pokedex.data.repository
+package com.example.pokedex.data.interfaces_impl
 
 import com.example.pokedex.data.local.PokedexDao
 import com.example.pokedex.data.local.PokedexDatabase
@@ -17,7 +17,7 @@ import com.example.pokedex.domain.model.BaseStat
 import com.example.pokedex.domain.model.PokemonCardInfo
 import com.example.pokedex.domain.model.PokemonEvolution
 import com.example.pokedex.domain.model.PokemonInfo
-import com.example.pokedex.domain.repository.PokedexRepository
+import com.example.pokedex.domain.interfaces.PokedexRepository
 import com.example.pokedex.util.Helpers
 import com.example.pokedex.util.Resource
 import java.io.IOException

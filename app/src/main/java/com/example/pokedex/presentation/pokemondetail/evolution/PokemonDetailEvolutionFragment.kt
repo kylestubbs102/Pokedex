@@ -15,9 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonDetailEvolutionBinding
+import com.example.pokedex.domain.interfaces.ImageLoader
 import com.example.pokedex.presentation.pokemondetail.PokemonDetailViewModel
 import com.example.pokedex.util.Resource
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 
@@ -33,13 +35,15 @@ class PokemonDetailEvolutionFragment : Fragment() {
 
     private lateinit var pokemonDetailEvolutionAdapter: PokemonDetailEvolutionAdapter
 
+    private val imageLoader: ImageLoader by inject()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentPokemonDetailEvolutionBinding.inflate(inflater, container, false)
 
-        pokemonDetailEvolutionAdapter = PokemonDetailEvolutionAdapter()
+        pokemonDetailEvolutionAdapter = PokemonDetailEvolutionAdapter(imageLoader)
 
         val itemDecoration = setupItemDecoration()
 

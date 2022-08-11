@@ -1,4 +1,4 @@
-package com.example.pokedex.domain.repository
+package com.example.pokedex.domain.interfaces
 
 import com.example.pokedex.data.local.BaseStatEntity
 import com.example.pokedex.domain.model.BaseStat

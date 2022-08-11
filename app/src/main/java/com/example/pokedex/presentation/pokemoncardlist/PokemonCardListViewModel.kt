@@ -3,7 +3,7 @@ package com.example.pokedex.presentation.pokemoncardlist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.domain.model.PokemonCardInfo
-import com.example.pokedex.domain.repository.PokedexRepository
+import com.example.pokedex.domain.interfaces.PokedexRepository
 import com.example.pokedex.util.Constants.POKEMON_API_LIMIT
 import com.example.pokedex.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow

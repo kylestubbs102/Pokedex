@@ -1,4 +1,4 @@
-package com.example.pokedex.domain.preferences
+package com.example.pokedex.domain.interfaces
 
 interface AppPreferences {
     fun insertBoolean(key: String, value: Boolean)

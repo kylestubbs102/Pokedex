@@ -2,11 +2,11 @@ package com.example.pokedex.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.pokedex.data.preferences.AppPreferencesImpl
-import com.example.pokedex.data.repository.PokedexRepositoryImpl
-import com.example.pokedex.domain.preferences.AppPreferences
-import com.example.pokedex.domain.preferences.AppPreferences.Companion.SHARED_PREF_NAME
-import com.example.pokedex.domain.repository.PokedexRepository
+import com.example.pokedex.data.interfaces_impl.AppPreferencesImpl
+import com.example.pokedex.data.interfaces_impl.PokedexRepositoryImpl
+import com.example.pokedex.domain.interfaces.AppPreferences
+import com.example.pokedex.domain.interfaces.AppPreferences.Companion.SHARED_PREF_NAME
+import com.example.pokedex.domain.interfaces.PokedexRepository
 import com.example.pokedex.domain.usecases.GetBaseStatsUseCase
 import com.example.pokedex.presentation.pokemoncardlist.PokemonCardListViewModel
 import com.example.pokedex.presentation.pokemondetail.PokemonDetailViewModel
@@ -31,7 +31,7 @@ val appModule = module {
     single { Dispatchers }
 }
 
-fun provideSharedPreferences(
+private fun provideSharedPreferences(
     context: Context
 ): SharedPreferences = context.getSharedPreferences(
     SHARED_PREF_NAME,

@@ -5,16 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.pokedex.R
 import com.example.pokedex.databinding.PokemonEvolutionItemBinding
+import com.example.pokedex.domain.interfaces.ImageLoader
 import com.example.pokedex.domain.model.PokemonEvolution
 import com.example.pokedex.util.Helpers
 
-class PokemonDetailEvolutionAdapter :
-    ListAdapter<PokemonEvolution, PokemonDetailEvolutionAdapter.PokemonEvolutionViewHolder>(
-        DIFF_CALLBACK
-    ) {
+class PokemonDetailEvolutionAdapter(
+    private val imageLoader: ImageLoader
+) : ListAdapter<PokemonEvolution, PokemonDetailEvolutionAdapter.PokemonEvolutionViewHolder>(
+    DIFF_CALLBACK
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonEvolutionViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -62,15 +63,14 @@ class PokemonDetailEvolutionAdapter :
             val evolvedUrl = Helpers.getImageUrl(pokemonEvolution.evolvedSpeciesId)
 
             with(binding) {
-                Glide
-                    .with(root.context)
-                    .load(originalUrl)
-                    .into(imageViewOriginalPokemon)
-
-                Glide
-                    .with(root.context)
-                    .load(evolvedUrl)
-                    .into(imageViewEvolvedPokemon)
+                imageLoader.loadImage(
+                    url = originalUrl,
+                    imageView = imageViewOriginalPokemon
+                )
+                imageLoader.loadImage(
+                    url = evolvedUrl,
+                    imageView = imageViewEvolvedPokemon
+                )
             }
         }
     }

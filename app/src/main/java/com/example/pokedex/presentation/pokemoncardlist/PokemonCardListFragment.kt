@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonCardListBinding
+import com.example.pokedex.domain.interfaces.ImageLoader
 import com.example.pokedex.domain.model.PokemonCardInfo
 import com.example.pokedex.presentation.pokemondetail.PokemonDetailFragment
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PokemonCardListFragment : Fragment() {
@@ -27,6 +29,8 @@ class PokemonCardListFragment : Fragment() {
         get() = _binding!!
 
     private lateinit var pokemonCardListAdapter: PokemonCardListAdapter
+
+    private val imageLoader: ImageLoader by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +68,8 @@ class PokemonCardListFragment : Fragment() {
     private fun setupRecyclerView() {
         val scrollListener = setupOnScrollListener()
 
-        pokemonCardListAdapter = PokemonCardListAdapter(::cardToDetailFragmentTransaction)
+        pokemonCardListAdapter =
+            PokemonCardListAdapter(imageLoader, ::cardToDetailFragmentTransaction)
 
         val gridSpacingItemDecoration = setupGridSpacingItemDecoration()
 

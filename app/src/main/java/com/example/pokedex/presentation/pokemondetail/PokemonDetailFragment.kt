@@ -15,15 +15,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.bumptech.glide.Glide
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonDetailBinding
+import com.example.pokedex.domain.interfaces.ImageLoader
 import com.example.pokedex.domain.model.PokemonCardInfo
 import com.example.pokedex.util.PokemonColorUtils
 import com.example.pokedex.util.Resource
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlin.math.abs
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PokemonDetailFragment : Fragment() {
@@ -37,6 +38,8 @@ class PokemonDetailFragment : Fragment() {
     private lateinit var _pokemonCardInfo: PokemonCardInfo
 
     private var isLiked = false
+
+    private val imageLoader: ImageLoader by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -149,11 +152,10 @@ class PokemonDetailFragment : Fragment() {
             }
 
             // TODO : extract into functions and set loading placeholder
-            Glide
-                .with(root.context)
-                .load(pokemonCardInfo.imageUrl)
-                .error(com.google.android.material.R.drawable.mtrl_ic_error)
-                .into(imageViewPokemonDetail)
+            imageLoader.loadImage(
+                url = pokemonCardInfo.imageUrl,
+                imageView = imageViewPokemonDetail
+            )
         }
 
         binding.appBarLayoutPokemonDetail.addOnOffsetChangedListener { appBarLayout, verticalOffset ->

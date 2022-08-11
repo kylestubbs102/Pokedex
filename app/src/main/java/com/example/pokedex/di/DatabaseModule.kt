@@ -13,7 +13,7 @@ val databaseModule = module {
     single { provideSectorDao(get()) }
 }
 
-fun provideRoomDatabase(
+private fun provideRoomDatabase(
     app: Application
 ): PokedexDatabase = Room.databaseBuilder(
     app,
@@ -21,6 +21,6 @@ fun provideRoomDatabase(
     DATABASE_NAME
 ).build()
 
-fun provideSectorDao(
+private fun provideSectorDao(
     db: PokedexDatabase
 ): PokedexDao = db.pokedexDao
