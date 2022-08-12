@@ -12,7 +12,6 @@ interface PokedexRepository {
     suspend fun getPokemonCardInfoList(
         limit: Int,
         offset: Int,
-        isInitialFetch: Boolean
     ): Flow<Resource<List<PokemonCardInfo>>>
 
     suspend fun getPokemonInfoById(

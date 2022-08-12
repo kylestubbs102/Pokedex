@@ -2,8 +2,8 @@ package com.example.pokedex.presentation.pokemoncardlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pokedex.domain.model.PokemonCardInfo
 import com.example.pokedex.domain.interfaces.PokedexRepository
+import com.example.pokedex.domain.model.PokemonCardInfo
 import com.example.pokedex.util.Constants.POKEMON_API_LIMIT
 import com.example.pokedex.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,26 +15,19 @@ class PokemonCardListViewModel(
 ) : ViewModel() {
 
     init {
-        fetchPokemonList(
-            offset = 0,
-            isInitialFetch = true,
-        )
+        fetchPokemonList(offset = 0)
     }
 
     private val _pokemonCardInfoListState = MutableStateFlow(PokemonCardListState())
     val pokemonCardInfoListState: StateFlow<PokemonCardListState>
         get() = _pokemonCardInfoListState
 
-    fun fetchPokemonList(
-        offset: Int,
-        isInitialFetch: Boolean
-    ) {
+    fun fetchPokemonList(offset: Int) {
         viewModelScope.launch {
             pokedexRepository
                 .getPokemonCardInfoList(
                     limit = POKEMON_API_LIMIT,
                     offset = offset,
-                    isInitialFetch = isInitialFetch
                 )
                 .collect {
                     checkAndUpdateState(it)

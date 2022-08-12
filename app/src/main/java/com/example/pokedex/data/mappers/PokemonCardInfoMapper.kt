@@ -8,5 +8,5 @@ fun PokemonCardInfoEntity.toPokemonCardInfo(): PokemonCardInfo =
         id = id,
         name = name,
         imageUrl = imageUrl,
-        color = color,
+        types = types,
     )

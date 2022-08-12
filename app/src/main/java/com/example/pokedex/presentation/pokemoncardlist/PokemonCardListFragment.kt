@@ -113,10 +113,7 @@ class PokemonCardListFragment : Fragment() {
                 && !viewModel.pokemonCardInfoListState.value.isLoading
             ) {
                 binding.recyclerViewPokedexList.adapter?.itemCount?.let {
-                    viewModel.fetchPokemonList(
-                        offset = it,
-                        isInitialFetch = false
-                    )
+                    viewModel.fetchPokemonList(offset = it)
                 }
             }
         }

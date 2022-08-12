@@ -12,6 +12,7 @@ import com.example.pokedex.data.mappers.toPokemonEvolutionEntityList
 import com.example.pokedex.data.mappers.toPokemonInfo
 import com.example.pokedex.data.mappers.toPokemonInfoEntity
 import com.example.pokedex.data.remote.PokedexApi
+import com.example.pokedex.data.remote.dto.pokemoninfo.PokemonInfoResponse
 import com.example.pokedex.data.remote.dto.pokemonspecies.PokemonSpeciesResponse
 import com.example.pokedex.domain.model.BaseStat
 import com.example.pokedex.domain.model.PokemonCardInfo
@@ -41,7 +42,6 @@ class PokedexRepositoryImpl(
     override suspend fun getPokemonCardInfoList(
         limit: Int,
         offset: Int,
-        isInitialFetch: Boolean,
     ): Flow<Resource<List<PokemonCardInfo>>> = flow {
         emit(Resource.Loading())
 
@@ -88,31 +88,28 @@ class PokedexRepositoryImpl(
             offset
         )
 
-        val pokemonSpeciesDeferredList = mutableListOf<Deferred<PokemonSpeciesResponse>>()
+        val pokemonInfoDeferredList = mutableListOf<Deferred<PokemonInfoResponse>>()
         for (index in 0..pokemonCardInfoListResponse.results.size) {
             val id = index + offset + 1
             if (id > 905) break
 
-            val pokemonSpeciesJob = async { pokedexApi.getPokemonSpeciesById(id) }
+            val pokemonSpeciesJob = async { pokedexApi.getPokemonInfoById(id) }
 
-            pokemonSpeciesDeferredList.add(pokemonSpeciesJob)
+            pokemonInfoDeferredList.add(pokemonSpeciesJob)
         }
-        val pokemonSpeciesResponseList = pokemonSpeciesDeferredList.awaitAll()
+        val pokemonInfoResponseList = pokemonInfoDeferredList.awaitAll()
 
         val pokemonCardInfoList = pokemonCardInfoListResponse.results.mapIndexed { index, result ->
             var id = index + offset + 1
             if (id > 905) {
                 id += 9095      // pokemon list id changes to 10001 after 905
             }
-            val color = when (id <= 905) {
-                true -> pokemonSpeciesResponseList[index].color.name
-                false -> ""     // will become default color
-            }
+
             PokemonCardInfoEntity(
                 id = id,
                 name = result.name,
                 imageUrl = Helpers.getImageUrl(id),
-                color = color
+                types = pokemonInfoResponseList[index].types.map { it.type.name },
             )
         }
         return@withContext pokemonCardInfoList

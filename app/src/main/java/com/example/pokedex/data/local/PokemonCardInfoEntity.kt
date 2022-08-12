@@ -1,5 +1,6 @@
 package com.example.pokedex.data.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,6 +8,6 @@ import androidx.room.PrimaryKey
 data class PokemonCardInfoEntity(
     @PrimaryKey(autoGenerate = false) val id: Int,
     val name: String,
-    val imageUrl: String,
-    val color: String
+    @ColumnInfo(name = "image_url") val imageUrl: String,
+    val types: List<String>,
 )

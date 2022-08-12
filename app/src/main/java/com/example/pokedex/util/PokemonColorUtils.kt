@@ -1,43 +1,61 @@
 package com.example.pokedex.util
 
 import com.example.pokedex.R
+import com.example.pokedex.domain.model.PokemonCardInfo
 
 object PokemonColorUtils {
-    fun getPokemonColor(color: String): Int {
-        return when (color) {
-            "black" -> R.color.black
-            "blue" -> R.color.blue_500
-            "brown" -> R.color.brown_500
-            "gray" -> R.color.gray_500
-            "green" -> R.color.green_500
-            "pink" -> R.color.pink_500
-            "purple" -> R.color.purple_500
-            "red" -> R.color.red_500
-            "white" -> R.color.white
-            "yellow" -> R.color.yellow_500
-            else -> R.color.gray_500
+    fun getPokemonColor(pokemonCardInfo: PokemonCardInfo): Int {
+        return when (getType(pokemonCardInfo)) {
+            "bug" -> R.color.bug
+            "dark" -> R.color.dark
+            "dragon" -> R.color.dragon
+            "electric" -> R.color.electric
+            "fairy" -> R.color.fairy
+            "fighting" -> R.color.fighting
+            "fire" -> R.color.fire
+            "flying" -> R.color.flying
+            "ghost" -> R.color.ghost
+            "grass" -> R.color.grass
+            "ground" -> R.color.ground
+            "ice" -> R.color.ice
+            "normal" -> R.color.normal
+            "poison" -> R.color.poison
+            "psychic" -> R.color.psychic
+            "rock" -> R.color.rock
+            "shadow" -> R.color.shadow
+            "steel" -> R.color.steel
+            "water" -> R.color.water
+            else -> R.color.unknown
         }
     }
 
-    fun getPokemonTextColor(color: String): Int {
-        return when (color) {
-            "white", "yellow" -> R.color.black
+    fun getPokemonTextColor(pokemonCardInfo: PokemonCardInfo): Int {
+        return when (getType(pokemonCardInfo)) {
+            // TODO : see all types that need to change color, also for func below
+            "ice" -> R.color.black
             else -> R.color.white
         }
     }
 
-    fun getPokemonIconLikedTintColor(color: String): Int {
-        return when (color) {
+    fun getPokemonIconLikedTintColor(pokemonCardInfo: PokemonCardInfo): Int {
+        return when (getType(pokemonCardInfo)) {
             "red", "pink" -> R.color.black
             else -> R.color.red_500
         }
     }
 
     // also used for the not liked icon
-    fun getPokemonIconTintColor(color: String): Int {
-        return when (color) {
+    fun getPokemonIconTintColor(pokemonCardInfo: PokemonCardInfo): Int {
+        return when (getType(pokemonCardInfo)) {
             "white", "yellow" -> R.color.black
             else -> R.color.white
+        }
+    }
+
+    private fun getType(pokemonCardInfo: PokemonCardInfo): String {
+        return when (pokemonCardInfo.types.size) {
+            0 -> ""
+            else -> pokemonCardInfo.types[0]
         }
     }
 }

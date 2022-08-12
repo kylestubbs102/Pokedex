@@ -45,25 +45,26 @@ class PokemonCardListAdapter(
         private fun setCardColors(
             pokemonCardInfo: PokemonCardInfo
         ) {
+
             binding.apply {
                 textViewPokemonCardId.setTextColor(
                     ContextCompat.getColor(
                         root.context,
-                        PokemonColorUtils.getPokemonTextColor(pokemonCardInfo.color)
+                        PokemonColorUtils.getPokemonTextColor(pokemonCardInfo)
                     )
                 )
 
                 textViewPokemonCardName.setTextColor(
                     ContextCompat.getColor(
                         root.context,
-                        PokemonColorUtils.getPokemonTextColor(pokemonCardInfo.color)
+                        PokemonColorUtils.getPokemonTextColor(pokemonCardInfo)
                     )
                 )
 
                 root.setCardBackgroundColor(
                     ContextCompat.getColor(
                         root.context,
-                        PokemonColorUtils.getPokemonColor(pokemonCardInfo.color)
+                        PokemonColorUtils.getPokemonColor(pokemonCardInfo)
                     )
                 )
             }

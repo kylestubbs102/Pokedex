@@ -2,16 +2,14 @@ package com.example.pokedex.data.local
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.pokedex.data.remote.dto.pokemoninfo.Stat
 
 @Entity
 data class PokemonInfoEntity(
     @PrimaryKey(autoGenerate = false) val id: Int,
     val name: String,
     val description: String,
-    val category: String,
+    val genus: String,
     val types: List<String>,
     @ColumnInfo(name = "image_url") val imageUrl: String,
     val color: String,

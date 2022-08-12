@@ -118,22 +118,21 @@ class PokemonDetailFragment : Fragment() {
     }
 
     private fun setupPokemonViews(pokemonCardInfo: PokemonCardInfo) {
-        val color = pokemonCardInfo.color
         binding.apply {
             appBarLayoutPokemonDetail.setBackgroundColor(
                 ContextCompat.getColor(
                     root.context,
-                    PokemonColorUtils.getPokemonColor(color)
+                    PokemonColorUtils.getPokemonColor(pokemonCardInfo)
                 )
             )
             val textColor = ContextCompat.getColor(
                 root.context,
-                PokemonColorUtils.getPokemonTextColor(color)
+                PokemonColorUtils.getPokemonTextColor(pokemonCardInfo)
             )
             toolbarPokemonId.setTextColor(
                 ContextCompat.getColor(
                     root.context,
-                    PokemonColorUtils.getPokemonTextColor(color)
+                    PokemonColorUtils.getPokemonTextColor(pokemonCardInfo)
                 )
             )
             collapsingToolbarLayoutPokemonDetail.apply {
@@ -173,15 +172,11 @@ class PokemonDetailFragment : Fragment() {
             arguments?.getParcelable(POKEMON_CARD_INFO_ARGUMENT_KEY)
 
         val iconTintColor = pokemonCardInfo?.let {
-            PokemonColorUtils.getPokemonIconTintColor(
-                it.color
-            )
+            PokemonColorUtils.getPokemonIconTintColor(it)
         } ?: R.color.white
 
         val likedIconTintColor = pokemonCardInfo?.let {
-            PokemonColorUtils.getPokemonIconLikedTintColor(
-                it.color
-            )
+            PokemonColorUtils.getPokemonIconLikedTintColor(it)
         } ?: R.color.red_500
 
         setDrawableTint(

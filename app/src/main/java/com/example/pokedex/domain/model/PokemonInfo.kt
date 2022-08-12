@@ -6,7 +6,7 @@ data class PokemonInfo(
     val id: Int,
     val name: String,
     val description: String,
-    val category: String, // genus field in pokemon-species
+    val genus: String,
     val types: List<String>,
     val imageUrl: String,
     val color: String,

@@ -8,5 +8,5 @@ data class PokemonCardInfo(
     val id: Int,
     val name: String,
     val imageUrl: String,
-    val color: String
+    val types: List<String>,
 ) : Parcelable

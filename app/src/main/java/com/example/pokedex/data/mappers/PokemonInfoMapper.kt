@@ -11,7 +11,7 @@ fun PokemonInfoEntity.toPokemonInfo(): PokemonInfo =
         id = id,
         name = name,
         description = description,
-        category = category,
+        genus = genus,
         types = types,
         imageUrl = imageUrl,
         color = color,
@@ -32,7 +32,7 @@ fun PokemonInfoResponse.toPokemonInfoEntity(
         id = id,
         name = name,
         description = getDescription(pokemonSpeciesResponse),
-        category = getCategory(pokemonSpeciesResponse),
+        genus = getGenus(pokemonSpeciesResponse),
         types = types.map { it.type.name },
         imageUrl = Helpers.getImageUrl(id),
         color = pokemonSpeciesResponse.color.name,
@@ -46,7 +46,7 @@ fun PokemonInfoResponse.toPokemonInfoEntity(
         evolutionChainId = pokemonSpeciesResponse.evolutionChain?.url?.let { Helpers.getIdFromUrl(it) },
     )
 
-private fun getCategory(pokemonSpeciesResponse: PokemonSpeciesResponse): String {
+private fun getGenus(pokemonSpeciesResponse: PokemonSpeciesResponse): String {
     return pokemonSpeciesResponse
         .genera
         .lastOrNull { it.language.name == "en" }
