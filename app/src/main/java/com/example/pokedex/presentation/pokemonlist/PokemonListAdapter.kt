@@ -1,4 +1,4 @@
-package com.example.pokedex.presentation.pokemoncardlist
+package com.example.pokedex.presentation.pokemonlist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,14 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.example.pokedex.databinding.PokemonCardItemBinding
 import com.example.pokedex.domain.interfaces.ImageLoader
-import com.example.pokedex.domain.model.PokemonCardInfo
+import com.example.pokedex.domain.model.PokemonInfo
+import com.example.pokedex.util.Helpers
 import com.example.pokedex.util.PokemonColorUtils
 import java.util.Locale
 
-class PokemonCardListAdapter(
+class PokemonListAdapter(
     private val imageLoader: ImageLoader,
-    private val cardToDetailFragmentTransaction: (pokemonCardInfo: PokemonCardInfo) -> Unit
-) : ListAdapter<PokemonCardInfo, PokemonCardListAdapter.PokemonCardViewHolder>(DIFF_CALLBACK) {
+    private val cardToDetailFragmentTransaction: (pokemonInfo: PokemonInfo) -> Unit
+) : ListAdapter<PokemonInfo, PokemonListAdapter.PokemonCardViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonCardViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -25,16 +26,16 @@ class PokemonCardListAdapter(
     }
 
     override fun onBindViewHolder(holder: PokemonCardViewHolder, position: Int) {
-        val pokemonCardInfo = getItem(position)
-        holder.bind(pokemonCardInfo)
+        val pokemonInfo = getItem(position)
+        holder.bind(pokemonInfo)
     }
 
     inner class PokemonCardViewHolder(
         private val binding: PokemonCardItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(pokemonCardInfo: PokemonCardInfo) {
-            pokemonCardInfo.let {
+        fun bind(pokemonInfo: PokemonInfo) {
+            pokemonInfo.let {
                 setCardText(it)
                 setCardColors(it)
                 setupImageLoader(it)
@@ -43,41 +44,42 @@ class PokemonCardListAdapter(
         }
 
         private fun setCardColors(
-            pokemonCardInfo: PokemonCardInfo
+            pokemonInfo: PokemonInfo
         ) {
+
             binding.apply {
                 textViewPokemonCardId.setTextColor(
                     ContextCompat.getColor(
                         root.context,
-                        PokemonColorUtils.getPokemonTextColor(pokemonCardInfo.color)
+                        PokemonColorUtils.getPokemonTextColor(pokemonInfo)
                     )
                 )
 
                 textViewPokemonCardName.setTextColor(
                     ContextCompat.getColor(
                         root.context,
-                        PokemonColorUtils.getPokemonTextColor(pokemonCardInfo.color)
+                        PokemonColorUtils.getPokemonTextColor(pokemonInfo)
                     )
                 )
 
                 root.setCardBackgroundColor(
                     ContextCompat.getColor(
                         root.context,
-                        PokemonColorUtils.getPokemonColor(pokemonCardInfo.color)
+                        PokemonColorUtils.getPokemonColor(pokemonInfo)
                     )
                 )
             }
         }
 
-        private fun setCardText(pokemonCardInfo: PokemonCardInfo) {
+        private fun setCardText(pokemonInfo: PokemonInfo) {
             binding.apply {
-                textViewPokemonCardId.text = pokemonCardInfo
+                textViewPokemonCardId.text = pokemonInfo
                     .id
                     .toString()
                     .padStart(3, '0')
                     .prependIndent("#")
 
-                textViewPokemonCardName.text = pokemonCardInfo.name.replaceFirstChar {
+                textViewPokemonCardName.text = pokemonInfo.name.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.ROOT
                     ) else it.toString()
@@ -86,11 +88,11 @@ class PokemonCardListAdapter(
         }
 
         private fun setupImageLoader(
-            pokemonCardInfo: PokemonCardInfo
+            pokemonInfo: PokemonInfo
         ) {
             binding.apply {
                 imageLoader.loadImage(
-                    url = pokemonCardInfo.imageUrl,
+                    url = Helpers.getImageUrl(pokemonInfo.id),
                     imageView = imageViewPokemon,
                     placeholder = CircularProgressDrawable(root.context).apply {
                         strokeWidth = 5f
@@ -102,28 +104,28 @@ class PokemonCardListAdapter(
         }
 
         private fun setupOnClickListener(
-            pokemonCardInfo: PokemonCardInfo
+            pokemonInfo: PokemonInfo
         ) {
             binding.apply {
                 root.setOnClickListener {
-                    cardToDetailFragmentTransaction(pokemonCardInfo)
+                    cardToDetailFragmentTransaction(pokemonInfo)
                 }
             }
         }
     }
 
     companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<PokemonCardInfo>() {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<PokemonInfo>() {
             override fun areItemsTheSame(
-                oldItem: PokemonCardInfo,
-                newItem: PokemonCardInfo
+                oldItem: PokemonInfo,
+                newItem: PokemonInfo
             ): Boolean {
                 return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(
-                oldItem: PokemonCardInfo,
-                newItem: PokemonCardInfo
+                oldItem: PokemonInfo,
+                newItem: PokemonInfo
             ): Boolean {
                 return oldItem == newItem
             }

@@ -18,9 +18,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonDetailBinding
 import com.example.pokedex.domain.interfaces.ImageLoader
-import com.example.pokedex.domain.model.PokemonCardInfo
+import com.example.pokedex.domain.model.PokemonInfo
+import com.example.pokedex.util.Helpers
 import com.example.pokedex.util.PokemonColorUtils
 import com.example.pokedex.util.Resource
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlin.math.abs
 import kotlinx.coroutines.launch
@@ -35,11 +37,19 @@ class PokemonDetailFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    private lateinit var _pokemonCardInfo: PokemonCardInfo
+    private lateinit var _pokemonInfo: PokemonInfo
 
     private var isLiked = false
 
     private val imageLoader: ImageLoader by inject()
+
+    private val appBarLayoutListener =
+        AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+            val newImageAndIdAlpha =
+                (1.0f - abs(verticalOffset / appBarLayout.totalScrollRange.toFloat()))
+            binding.imageViewPokemonDetail.alpha = newImageAndIdAlpha
+            binding.toolbarPokemonId.alpha = newImageAndIdAlpha
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,15 +65,14 @@ class PokemonDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.pokemonInfoFlow
-                    .collect { uiState ->
-                        when (uiState) {
+                viewModel.pokemonAboutInfoFlow
+                    .collect { pokemonAboutInfo ->
+                        when (pokemonAboutInfo) {
                             is Resource.Loading -> {
                                 binding.progressBarPokemonDetail.visibility = View.VISIBLE
                             }
                             is Resource.Success -> {
                                 binding.progressBarPokemonDetail.visibility = View.GONE
-                                uiState.data?.let { isLiked = it.isLiked }
                                 activity?.invalidateOptionsMenu()
                             }
                             is Resource.Error -> {
@@ -75,15 +84,15 @@ class PokemonDetailFragment : Fragment() {
             }
         }
 
-        val pokemonCardInfo: PokemonCardInfo? =
+        val pokemonInfo: PokemonInfo? =
             arguments?.getParcelable(POKEMON_CARD_INFO_ARGUMENT_KEY)
 
-        if (pokemonCardInfo != null) {
-            _pokemonCardInfo = pokemonCardInfo
-            viewModel.fetchPokemonInfo(pokemonCardInfo.id)
+        if (pokemonInfo != null) {
+            _pokemonInfo = pokemonInfo
+            viewModel.fetchPokemonInfo(pokemonInfo.id)
 
-            setupPokemonViews(pokemonCardInfo)
-            setupViewPager(pokemonCardInfo.id)
+            setupPokemonViews(pokemonInfo)
+            setupViewPager(pokemonInfo.id)
             setupToolbar()
         } else {
             showErrorScreen()
@@ -117,34 +126,33 @@ class PokemonDetailFragment : Fragment() {
         // TODO : handle error case with dialog where pokemon can't be ready, maybe add message param
     }
 
-    private fun setupPokemonViews(pokemonCardInfo: PokemonCardInfo) {
-        val color = pokemonCardInfo.color
+    private fun setupPokemonViews(pokemonInfo: PokemonInfo) {
         binding.apply {
             appBarLayoutPokemonDetail.setBackgroundColor(
                 ContextCompat.getColor(
                     root.context,
-                    PokemonColorUtils.getPokemonColor(color)
+                    PokemonColorUtils.getPokemonColor(pokemonInfo)
                 )
             )
             val textColor = ContextCompat.getColor(
                 root.context,
-                PokemonColorUtils.getPokemonTextColor(color)
+                PokemonColorUtils.getPokemonTextColor(pokemonInfo)
             )
             toolbarPokemonId.setTextColor(
                 ContextCompat.getColor(
                     root.context,
-                    PokemonColorUtils.getPokemonTextColor(color)
+                    PokemonColorUtils.getPokemonTextColor(pokemonInfo)
                 )
             )
             collapsingToolbarLayoutPokemonDetail.apply {
-                title = pokemonCardInfo.name.replaceFirstChar {
+                title = pokemonInfo.name.replaceFirstChar {
                     it.uppercase()
                 }
                 setCollapsedTitleTextColor(textColor)
                 setExpandedTitleColor(textColor)
             }
             toolbarPokemonId.apply {
-                text = pokemonCardInfo
+                text = pokemonInfo
                     .id
                     .toString()
                     .padStart(3, '0')
@@ -153,35 +161,26 @@ class PokemonDetailFragment : Fragment() {
 
             // TODO : extract into functions and set loading placeholder
             imageLoader.loadImage(
-                url = pokemonCardInfo.imageUrl,
+                url = Helpers.getImageUrl(pokemonInfo.id),
                 imageView = imageViewPokemonDetail
             )
         }
 
-        binding.appBarLayoutPokemonDetail.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
-            val newImageAndIdAlpha =
-                (1.0f - abs(verticalOffset / appBarLayout.totalScrollRange.toFloat()))
-            binding.imageViewPokemonDetail.alpha = newImageAndIdAlpha
-            binding.toolbarPokemonId.alpha = newImageAndIdAlpha
-        }
+        binding.appBarLayoutPokemonDetail.addOnOffsetChangedListener(appBarLayoutListener)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        val pokemonCardInfo: PokemonCardInfo? =
+        val pokemonInfo: PokemonInfo? =
             arguments?.getParcelable(POKEMON_CARD_INFO_ARGUMENT_KEY)
 
-        val iconTintColor = pokemonCardInfo?.let {
-            PokemonColorUtils.getPokemonIconTintColor(
-                it.color
-            )
+        val iconTintColor = pokemonInfo?.let {
+            PokemonColorUtils.getPokemonIconTintColor(it)
         } ?: R.color.white
 
-        val likedIconTintColor = pokemonCardInfo?.let {
-            PokemonColorUtils.getPokemonIconLikedTintColor(
-                it.color
-            )
+        val likedIconTintColor = pokemonInfo?.let {
+            PokemonColorUtils.getPokemonIconLikedTintColor(it)
         } ?: R.color.red_500
 
         setDrawableTint(
@@ -220,12 +219,12 @@ class PokemonDetailFragment : Fragment() {
             R.id.menu_item_liked -> {
                 isLiked = false
                 activity?.invalidateOptionsMenu()
-                viewModel.updateLikedValue(_pokemonCardInfo.id, false)
+                viewModel.updateLikedValue(_pokemonInfo.id, false)
             }
             R.id.menu_item_not_liked -> {
                 isLiked = true
                 activity?.invalidateOptionsMenu()
-                viewModel.updateLikedValue(_pokemonCardInfo.id, true)
+                viewModel.updateLikedValue(_pokemonInfo.id, true)
             }
             android.R.id.home -> {
                 parentFragmentManager.popBackStack()
@@ -243,14 +242,15 @@ class PokemonDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.appBarLayoutPokemonDetail.removeOnOffsetChangedListener(appBarLayoutListener)
         _binding = null
     }
 
     companion object {
-        fun newInstance(pokemonCardInfo: PokemonCardInfo): PokemonDetailFragment {
+        fun newInstance(pokemonInfo: PokemonInfo): PokemonDetailFragment {
             val pokemonDetailFragment = PokemonDetailFragment()
             val args = Bundle().apply {
-                putParcelable(POKEMON_CARD_INFO_ARGUMENT_KEY, pokemonCardInfo)
+                putParcelable(POKEMON_CARD_INFO_ARGUMENT_KEY, pokemonInfo)
             }
             pokemonDetailFragment.arguments = args
             return pokemonDetailFragment

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/pokemonCardListFragment"
-        android:name="com.example.pokedex.presentation.pokemoncardlist.PokemonCardListFragment"
+        android:name="com.example.pokedex.presentation.pokemonlist.PokemonListFragment"
         tools:layout="@layout/fragment_pokemon_card_list" />
 
     <fragment

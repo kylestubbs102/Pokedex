@@ -9,7 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.pokedex.databinding.FragmentPokemonDetailAboutBinding
-import com.example.pokedex.domain.model.PokemonInfo
+import com.example.pokedex.domain.model.PokemonAboutInfo
 import com.example.pokedex.presentation.pokemondetail.PokemonDetailViewModel
 import com.example.pokedex.util.Resource
 import kotlinx.coroutines.launch
@@ -37,14 +37,14 @@ class PokemonDetailAboutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.pokemonInfoFlow
-                    .collect { pokemonInfoState ->
-                        when (pokemonInfoState) {
+                viewModel.pokemonAboutInfoFlow
+                    .collect { pokemonAboutInfoState ->
+                        when (pokemonAboutInfoState) {
                             is Resource.Loading -> {
                                 // TODO : maybe use shimmer
                             }
                             is Resource.Success -> {
-                                pokemonInfoState.data?.let { bindPokemonInfo(it) }
+                                pokemonAboutInfoState.data?.let { bindPokemonAboutInfo(it) }
                             }
                             is Resource.Error -> {
                                 // TODO : error handled in parent fragment
@@ -56,24 +56,24 @@ class PokemonDetailAboutFragment : Fragment() {
     }
 
 
-    private fun bindPokemonInfo(pokemonInfo: PokemonInfo) {
-        setDescription(pokemonInfo)
-        setHeightAndWeight(pokemonInfo)
-        setGenderRates(pokemonInfo.genderRate)
-        setEggGroupsAndCycles(pokemonInfo)
-        setBaseExperience(pokemonInfo)
+    private fun bindPokemonAboutInfo(pokemonAboutInfo: PokemonAboutInfo) {
+        setDescription(pokemonAboutInfo)
+        setHeightAndWeight(pokemonAboutInfo)
+        setGenderRates(pokemonAboutInfo.genderRate)
+        setEggGroupsAndCycles(pokemonAboutInfo)
+        setBaseExperience(pokemonAboutInfo)
     }
 
-    private fun setDescription(pokemonInfo: PokemonInfo) {
+    private fun setDescription(pokemonAboutInfo: PokemonAboutInfo) {
         binding.apply {
-            textViewDescription.text = pokemonInfo.description
+            textViewDescription.text = pokemonAboutInfo.description
         }
     }
 
-    private fun setHeightAndWeight(pokemonInfo: PokemonInfo) {
+    private fun setHeightAndWeight(pokemonAboutInfo: PokemonAboutInfo) {
         binding.apply {
-            textViewHeight.text = getHeightText(pokemonInfo.height)
-            textViewWeight.text = getWeightText(pokemonInfo.weight)
+            textViewHeight.text = getHeightText(pokemonAboutInfo.height)
+            textViewWeight.text = getWeightText(pokemonAboutInfo.weight)
         }
     }
 
@@ -130,18 +130,18 @@ class PokemonDetailAboutFragment : Fragment() {
         }
     }
 
-    private fun setEggGroupsAndCycles(pokemonInfo: PokemonInfo) {
+    private fun setEggGroupsAndCycles(pokemonAboutInfo: PokemonAboutInfo) {
         binding.apply {
-            textViewEggGroups.text = pokemonInfo.eggGroups.joinToString(", ") { group ->
+            textViewEggGroups.text = pokemonAboutInfo.eggGroups.joinToString(", ") { group ->
                 group.replaceFirstChar { it.uppercase() }
             }
-            textViewEggCycles.text = pokemonInfo.eggCycles.toString()
+            textViewEggCycles.text = pokemonAboutInfo.eggCycles.toString()
         }
     }
 
-    private fun setBaseExperience(pokemonInfo: PokemonInfo) {
+    private fun setBaseExperience(pokemonAboutInfo: PokemonAboutInfo) {
         binding.apply {
-            textViewBaseExperience.text = pokemonInfo.baseExperience.toString()
+            textViewBaseExperience.text = pokemonAboutInfo.baseExperience.toString()
         }
     }
 

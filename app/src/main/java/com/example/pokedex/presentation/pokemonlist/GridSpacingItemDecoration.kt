@@ -1,4 +1,4 @@
-package com.example.pokedex.presentation.pokemoncardlist
+package com.example.pokedex.presentation.pokemonlist
 
 import android.graphics.Rect
 import android.view.View

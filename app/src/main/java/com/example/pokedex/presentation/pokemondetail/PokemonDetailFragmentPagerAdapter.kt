@@ -17,7 +17,7 @@ class PokemonDetailFragmentPagerAdapter(
         return when (position) {
             ABOUT_POSITION -> PokemonDetailAboutFragment.newInstance()
             BASE_STATS_POSITION -> PokemonDetailBaseStatsFragment.newInstance(pokemonId)
-            EVOLUTION_POSITION -> PokemonDetailEvolutionFragment.newInstance()
+            EVOLUTION_POSITION -> PokemonDetailEvolutionFragment.newInstance(pokemonId)
             MOVES_POSITION -> PokemonDetailMovesFragment.newInstance()
             else -> throw IndexOutOfBoundsException("View pager has invalid position.")
         }
