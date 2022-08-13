@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 @Database(
     entities = [
         PokemonInfoEntity::class,
-        PokemonCardInfoEntity::class,
+        PokemonSpeciesEntity::class,
         PokemonEvolutionEntity::class,
         BaseStatEntity::class,
     ],

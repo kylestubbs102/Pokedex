@@ -9,9 +9,6 @@ import android.util.AttributeSet
 import android.view.View
 import kotlin.properties.Delegates
 
-/**
- * TODO: document your custom view class.
- */
 class BaseStatBar(
     context: Context,
     attrs: AttributeSet

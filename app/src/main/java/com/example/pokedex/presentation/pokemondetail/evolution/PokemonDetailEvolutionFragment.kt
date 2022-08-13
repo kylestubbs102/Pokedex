@@ -16,18 +16,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonDetailEvolutionBinding
 import com.example.pokedex.domain.interfaces.ImageLoader
-import com.example.pokedex.presentation.pokemondetail.PokemonDetailViewModel
 import com.example.pokedex.util.Resource
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PokemonDetailEvolutionFragment : Fragment() {
 
-    private val viewModel by lazy {
-        requireParentFragment().getViewModel<PokemonDetailViewModel>()
-    }
+    private val viewModel: PokemonDetailEvolutionViewModel by viewModel()
 
     private var _binding: FragmentPokemonDetailEvolutionBinding? = null
     private val binding
@@ -59,63 +56,47 @@ class PokemonDetailEvolutionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    collectPokemonInfoFlow()
-                }
-                launch {
-                    collectPokemonEvolutionFlow()
-                }
+                collectPokemonEvolutionFlow()
             }
         }
     }
 
-    private suspend fun collectPokemonInfoFlow() {
-        viewModel.pokemonInfoFlow
-            .collect { pokemonEvolutionState ->
-                when (pokemonEvolutionState) {
-                    is Resource.Loading -> {
-                        // TODO : maybe use shimmer
-                    }
-                    is Resource.Success -> {
-                        if (pokemonEvolutionState.data?.evolutionChainId == null) {
-                            binding.textViewTitle.text =
-                                getString(R.string.text_view_no_evolution_chain)
-                            return@collect
-                        }
+    private suspend fun collectPokemonEvolutionFlow() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.pokemonEvolutionFlow
+                    .collect { pokemonEvolutionState ->
+                        when (pokemonEvolutionState) {
+                            is Resource.Loading -> {
+                                // TODO : maybe use shimmer
+                            }
+                            is Resource.Success -> {
+                                if (pokemonEvolutionState.data.isNullOrEmpty()) {
+                                    binding.textViewTitle.text =
+                                        getString(R.string.text_view_no_evolution_chain)
+                                    return@collect
+                                }
 
-                        viewModel.fetchPokemonEvolutionList(
-                            pokemonEvolutionState.data.id,
-                            pokemonEvolutionState.data.evolutionChainId
-                        )
+                                pokemonDetailEvolutionAdapter.submitList(pokemonEvolutionState.data)
+                            }
+                            is Resource.Error -> {
+                                // TODO : error handled in parent fragment
+                            }
+                        }
                     }
-                    is Resource.Error -> {
-                        // TODO : error handled in parent fragment
-                    }
-                }
             }
+        }
+
+        val id = arguments?.getInt(POKEMON_ID_KEY)
+        if (id != null) {
+            viewModel.fetchPokemonEvolutionList(id)
+        } else {
+            showErrorScreen()
+        }
     }
 
-    private suspend fun collectPokemonEvolutionFlow() {
-        viewModel.pokemonEvolutionFlow
-            .collect { pokemonEvolutionState ->
-                when (pokemonEvolutionState) {
-                    is Resource.Loading -> {
-                        // TODO : maybe use shimmer
-                    }
-                    is Resource.Success -> {
-                        if (pokemonEvolutionState.data.isNullOrEmpty()) {
-                            binding.textViewTitle.text =
-                                getString(R.string.text_view_no_evolution_chain)
-                            return@collect
-                        }
-
-                        pokemonDetailEvolutionAdapter.submitList(pokemonEvolutionState.data)
-                    }
-                    is Resource.Error -> {
-                        // TODO : error handled in parent fragment
-                    }
-                }
-            }
+    private fun showErrorScreen() {
+        // TODO : maybe use shimmer
     }
 
     private fun setupItemDecoration(): DividerItemDecoration {
@@ -150,8 +131,17 @@ class PokemonDetailEvolutionFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance() = PokemonDetailEvolutionFragment()
+        fun newInstance(pokemonId: Int): PokemonDetailEvolutionFragment {
+            val args = Bundle().apply {
+                putInt(POKEMON_ID_KEY, pokemonId)
+            }
+            return PokemonDetailEvolutionFragment().apply {
+                arguments = args
+            }
+        }
 
         private const val ITEM_DECORATOR_ALPHA = 60
+
+        private const val POKEMON_ID_KEY = "pokemon_id_key"
     }
 }

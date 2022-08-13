@@ -1,16 +1,16 @@
-package com.example.pokedex.presentation.pokemoncardlist
+package com.example.pokedex.presentation.pokemonlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.domain.interfaces.PokedexRepository
-import com.example.pokedex.domain.model.PokemonCardInfo
+import com.example.pokedex.domain.model.PokemonInfo
 import com.example.pokedex.util.Constants.POKEMON_API_LIMIT
 import com.example.pokedex.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PokemonCardListViewModel(
+class PokemonListViewModel(
     private val pokedexRepository: PokedexRepository
 ) : ViewModel() {
 
@@ -18,14 +18,14 @@ class PokemonCardListViewModel(
         fetchPokemonList(offset = 0)
     }
 
-    private val _pokemonCardInfoListState = MutableStateFlow(PokemonCardListState())
-    val pokemonCardInfoListState: StateFlow<PokemonCardListState>
-        get() = _pokemonCardInfoListState
+    private val _pokemonInfoListState = MutableStateFlow(PokemonListState())
+    val pokemonInfoListState: StateFlow<PokemonListState>
+        get() = _pokemonInfoListState
 
     fun fetchPokemonList(offset: Int) {
         viewModelScope.launch {
             pokedexRepository
-                .getPokemonCardInfoList(
+                .getPokemonInfoList(
                     limit = POKEMON_API_LIMIT,
                     offset = offset,
                 )
@@ -36,30 +36,30 @@ class PokemonCardListViewModel(
     }
 
     private suspend fun checkAndUpdateState(
-        resource: Resource<List<PokemonCardInfo>>
+        resource: Resource<List<PokemonInfo>>
     ) {
         when (resource) {
             is Resource.Loading -> {
-                _pokemonCardInfoListState.emit(
-                    PokemonCardListState(
+                _pokemonInfoListState.emit(
+                    PokemonListState(
                         isLoading = true,
-                        pokemonCardList = _pokemonCardInfoListState.value.pokemonCardList,
+                        pokemonList = _pokemonInfoListState.value.pokemonList,
                     )
                 )
             }
             is Resource.Success -> {
-                val newListCards = resource.data ?: emptyList()
-                val newList = _pokemonCardInfoListState.value.pokemonCardList + newListCards
-                _pokemonCardInfoListState.emit(
-                    PokemonCardListState(
-                        pokemonCardList = newList
+                val newValues = resource.data ?: emptyList()
+                val newList = _pokemonInfoListState.value.pokemonList + newValues
+                _pokemonInfoListState.emit(
+                    PokemonListState(
+                        pokemonList = newList
                     )
                 )
             }
             is Resource.Error -> {
-                _pokemonCardInfoListState.emit(
-                    PokemonCardListState(
-                        pokemonCardList = _pokemonCardInfoListState.value.pokemonCardList,
+                _pokemonInfoListState.emit(
+                    PokemonListState(
+                        pokemonList = _pokemonInfoListState.value.pokemonList,
                         errorMessage = resource.message ?: "Error occurred."
                     )
                 )

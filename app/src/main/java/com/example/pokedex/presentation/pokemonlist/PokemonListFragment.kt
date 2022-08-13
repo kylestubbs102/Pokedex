@@ -1,4 +1,4 @@
-package com.example.pokedex.presentation.pokemoncardlist
+package com.example.pokedex.presentation.pokemonlist
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,21 +14,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonCardListBinding
 import com.example.pokedex.domain.interfaces.ImageLoader
-import com.example.pokedex.domain.model.PokemonCardInfo
+import com.example.pokedex.domain.model.PokemonInfo
 import com.example.pokedex.presentation.pokemondetail.PokemonDetailFragment
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PokemonCardListFragment : Fragment() {
+class PokemonListFragment : Fragment() {
 
-    private val viewModel: PokemonCardListViewModel by viewModel()
+    private val viewModel: PokemonListViewModel by viewModel()
 
     private var _binding: FragmentPokemonCardListBinding? = null
     private val binding
         get() = _binding!!
 
-    private lateinit var pokemonCardListAdapter: PokemonCardListAdapter
+    private lateinit var pokemonListAdapter: PokemonListAdapter
 
     private val imageLoader: ImageLoader by inject()
 
@@ -47,14 +47,14 @@ class PokemonCardListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel
-                    .pokemonCardInfoListState
+                    .pokemonInfoListState
                     .collect { pokemonCardListState ->
                         if (pokemonCardListState.errorMessage != "") {
                             // TODO : handle error message
                             return@collect
                         }
 
-                        val listToUpdate = pokemonCardListState.pokemonCardList
+                        val listToUpdate = pokemonCardListState.pokemonList
                         if (pokemonCardListState.isLoading) {
                             updateAdapterAndProgressBar(View.VISIBLE, listToUpdate)
                         } else {
@@ -68,8 +68,8 @@ class PokemonCardListFragment : Fragment() {
     private fun setupRecyclerView() {
         val scrollListener = setupOnScrollListener()
 
-        pokemonCardListAdapter =
-            PokemonCardListAdapter(imageLoader, ::cardToDetailFragmentTransaction)
+        pokemonListAdapter =
+            PokemonListAdapter(imageLoader, ::cardToDetailFragmentTransaction)
 
         val gridSpacingItemDecoration = setupGridSpacingItemDecoration()
 
@@ -79,7 +79,7 @@ class PokemonCardListFragment : Fragment() {
         )
         binding.recyclerViewPokedexList.apply {
             layoutManager = gridLayoutManager
-            adapter = pokemonCardListAdapter
+            adapter = pokemonListAdapter
             setHasFixedSize(true)
             addItemDecoration(gridSpacingItemDecoration)
             addOnScrollListener(scrollListener)
@@ -88,9 +88,9 @@ class PokemonCardListFragment : Fragment() {
 
     private fun updateAdapterAndProgressBar(
         progressBarVisibility: Int,
-        listToUpdate: List<PokemonCardInfo>,
+        listToUpdate: List<PokemonInfo>,
     ) {
-        pokemonCardListAdapter.submitList(listToUpdate)
+        pokemonListAdapter.submitList(listToUpdate)
 
         if (progressBarVisibility == View.GONE) {
             binding.progressBarBottom.visibility = progressBarVisibility
@@ -98,7 +98,7 @@ class PokemonCardListFragment : Fragment() {
             return
         }
 
-        if (viewModel.pokemonCardInfoListState.value.pokemonCardList.isNotEmpty()) {
+        if (listToUpdate.isNotEmpty()) {
             binding.progressBarBottom.visibility = progressBarVisibility
         } else {
             binding.progressBarCenter.visibility = progressBarVisibility
@@ -110,7 +110,7 @@ class PokemonCardListFragment : Fragment() {
             super.onScrollStateChanged(recyclerView, newState)
             if (!recyclerView.canScrollVertically(1)    // can't scroll any further
                 && newState == RecyclerView.SCROLL_STATE_IDLE
-                && !viewModel.pokemonCardInfoListState.value.isLoading
+                && !viewModel.pokemonInfoListState.value.isLoading
             ) {
                 binding.recyclerViewPokedexList.adapter?.itemCount?.let {
                     viewModel.fetchPokemonList(offset = it)
@@ -134,8 +134,8 @@ class PokemonCardListFragment : Fragment() {
         )
     }
 
-    private fun cardToDetailFragmentTransaction(pokemonCardInfo: PokemonCardInfo) {
-        val pokemonDetailFragment = PokemonDetailFragment.newInstance(pokemonCardInfo)
+    private fun cardToDetailFragmentTransaction(pokemonInfo: PokemonInfo) {
+        val pokemonDetailFragment = PokemonDetailFragment.newInstance(pokemonInfo)
         requireActivity().supportFragmentManager.commit {
             replace(R.id.fragment_container_view_main, pokemonDetailFragment)
             setReorderingAllowed(true)

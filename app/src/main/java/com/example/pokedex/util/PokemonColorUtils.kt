@@ -1,11 +1,11 @@
 package com.example.pokedex.util
 
 import com.example.pokedex.R
-import com.example.pokedex.domain.model.PokemonCardInfo
+import com.example.pokedex.domain.model.PokemonInfo
 
 object PokemonColorUtils {
-    fun getPokemonColor(pokemonCardInfo: PokemonCardInfo): Int {
-        return when (getType(pokemonCardInfo)) {
+    fun getPokemonColor(pokemonInfo: PokemonInfo): Int {
+        return when (getType(pokemonInfo)) {
             "bug" -> R.color.bug
             "dark" -> R.color.dark
             "dragon" -> R.color.dragon
@@ -29,33 +29,33 @@ object PokemonColorUtils {
         }
     }
 
-    fun getPokemonTextColor(pokemonCardInfo: PokemonCardInfo): Int {
-        return when (getType(pokemonCardInfo)) {
+    fun getPokemonTextColor(pokemonInfo: PokemonInfo): Int {
+        return when (getType(pokemonInfo)) {
             // TODO : see all types that need to change color, also for func below
             "ice" -> R.color.black
             else -> R.color.white
         }
     }
 
-    fun getPokemonIconLikedTintColor(pokemonCardInfo: PokemonCardInfo): Int {
-        return when (getType(pokemonCardInfo)) {
+    fun getPokemonIconLikedTintColor(pokemonInfo: PokemonInfo): Int {
+        return when (getType(pokemonInfo)) {
             "red", "pink" -> R.color.black
             else -> R.color.red_500
         }
     }
 
     // also used for the not liked icon
-    fun getPokemonIconTintColor(pokemonCardInfo: PokemonCardInfo): Int {
-        return when (getType(pokemonCardInfo)) {
+    fun getPokemonIconTintColor(pokemonInfo: PokemonInfo): Int {
+        return when (getType(pokemonInfo)) {
             "white", "yellow" -> R.color.black
             else -> R.color.white
         }
     }
 
-    private fun getType(pokemonCardInfo: PokemonCardInfo): String {
-        return when (pokemonCardInfo.types.size) {
+    private fun getType(pokemonInfo: PokemonInfo): String {
+        return when (pokemonInfo.types.size) {
             0 -> ""
-            else -> pokemonCardInfo.types[0]
+            else -> pokemonInfo.types[0]
         }
     }
 }
