@@ -4,23 +4,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.domain.interfaces.PokedexRepository
 import com.example.pokedex.domain.model.PokemonAboutInfo
-import com.example.pokedex.domain.model.PokemonEvolution
-import com.example.pokedex.domain.model.PokemonInfo
 import com.example.pokedex.util.Resource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(
     private val pokedexRepository: PokedexRepository
 ) : ViewModel() {
 
-    private val _pokemonAboutInfoFlow = MutableStateFlow<Resource<PokemonAboutInfo>>(Resource.Loading())
+    private val _pokemonLikedFlow = MutableStateFlow<Boolean>(false)
+    val pokemonLikedFlow: StateFlow<Boolean>
+        get() = _pokemonLikedFlow
+
+    private val _pokemonAboutInfoFlow =
+        MutableStateFlow<Resource<PokemonAboutInfo>>(Resource.Loading())
     val pokemonAboutInfoFlow: StateFlow<Resource<PokemonAboutInfo>>
         get() = _pokemonAboutInfoFlow
 
-    fun fetchPokemonInfo(id: Int) {
+    fun getPokemonAboutInfo(id: Int) {
         viewModelScope.launch {
             pokedexRepository
                 .getPokemonAboutInfoById(id)
@@ -34,7 +37,7 @@ class PokemonDetailViewModel(
         id: Int,
         isLiked: Boolean
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             pokedexRepository
                 .updatePokemonIsLiked(
                     id,
@@ -43,4 +46,13 @@ class PokemonDetailViewModel(
         }
     }
 
+    fun getPokemonLikedValue(id: Int) {
+        viewModelScope.launch {
+            pokedexRepository
+                .getPokemonIsLiked(id)
+                .collect {
+                    _pokemonLikedFlow.emit(it)
+                }
+        }
+    }
 }

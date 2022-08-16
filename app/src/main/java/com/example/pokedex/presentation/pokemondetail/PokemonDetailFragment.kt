@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -39,8 +41,6 @@ class PokemonDetailFragment : Fragment() {
 
     private lateinit var _pokemonInfo: PokemonInfo
 
-    private var isLiked = false
-
     private val imageLoader: ImageLoader by inject()
 
     private val appBarLayoutListener =
@@ -48,7 +48,7 @@ class PokemonDetailFragment : Fragment() {
             val newImageAndIdAlpha =
                 (1.0f - abs(verticalOffset / appBarLayout.totalScrollRange.toFloat()))
             binding.imageViewPokemonDetail.alpha = newImageAndIdAlpha
-            binding.toolbarPokemonId.alpha = newImageAndIdAlpha
+            binding.textViewPokemonId.alpha = newImageAndIdAlpha
         }
 
     override fun onCreateView(
@@ -57,39 +57,50 @@ class PokemonDetailFragment : Fragment() {
     ): View {
         _binding = FragmentPokemonDetailBinding.inflate(inflater, container, false)
 
-        setHasOptionsMenu(true)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.pokemonAboutInfoFlow
-                    .collect { pokemonAboutInfo ->
-                        when (pokemonAboutInfo) {
-                            is Resource.Loading -> {
-                                binding.progressBarPokemonDetail.visibility = View.VISIBLE
-                            }
-                            is Resource.Success -> {
-                                binding.progressBarPokemonDetail.visibility = View.GONE
-                                activity?.invalidateOptionsMenu()
-                            }
-                            is Resource.Error -> {
-                                showErrorScreen()
-                                binding.progressBarPokemonDetail.visibility = View.GONE
+                launch {
+                    viewModel
+                        .pokemonAboutInfoFlow
+                        .collect { pokemonAboutInfo ->
+                            when (pokemonAboutInfo) {
+                                is Resource.Loading -> {
+                                    binding.progressBarPokemonDetail.visibility = View.VISIBLE
+                                }
+                                is Resource.Success -> {
+                                    binding.progressBarPokemonDetail.visibility = View.GONE
+                                    activity?.invalidateOptionsMenu()
+                                }
+                                is Resource.Error -> {
+                                    showErrorScreen()
+                                    binding.progressBarPokemonDetail.visibility = View.GONE
+                                }
                             }
                         }
-                    }
+                }
+                launch {
+                    viewModel
+                        .pokemonLikedFlow
+                        .collect { isLiked ->
+                            _pokemonInfo = _pokemonInfo.copy(isLiked = isLiked)
+                        }
+                }
             }
         }
+
+        setupMenuProvider()
 
         val pokemonInfo: PokemonInfo? =
             arguments?.getParcelable(POKEMON_CARD_INFO_ARGUMENT_KEY)
 
         if (pokemonInfo != null) {
             _pokemonInfo = pokemonInfo
-            viewModel.fetchPokemonInfo(pokemonInfo.id)
+            viewModel.getPokemonAboutInfo(pokemonInfo.id)
+            viewModel.getPokemonLikedValue(pokemonInfo.id)
 
             setupPokemonViews(pokemonInfo)
             setupViewPager(pokemonInfo.id)
@@ -100,8 +111,54 @@ class PokemonDetailFragment : Fragment() {
 
     }
 
+    private fun setupMenuProvider() {
+        val menuHost: MenuHost = requireActivity()
+
+        val menuProvider = object : MenuProvider {
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                val likedIconTintColor =
+                    PokemonColorUtils.getPokemonIconLikedTintColor(_pokemonInfo)
+
+                setDrawableTint(
+                    DrawableCompat.wrap(menu.findItem(R.id.menu_item_liked).icon),
+                    likedIconTintColor
+                )
+                setIconsVisibility(_pokemonInfo.isLiked)
+            }
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                binding.toolbarPokemonDetail.inflateMenu(R.menu.pokemon_detail_menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_item_liked -> {
+                        _pokemonInfo = _pokemonInfo.copy(isLiked = false)
+                        activity?.invalidateOptionsMenu()
+                        viewModel.updateLikedValue(_pokemonInfo.id, false)
+                        false
+                    }
+                    R.id.menu_item_not_liked -> {
+                        _pokemonInfo = _pokemonInfo.copy(isLiked = true)
+                        activity?.invalidateOptionsMenu()
+                        viewModel.updateLikedValue(_pokemonInfo.id, true)
+                        false
+                    }
+                    android.R.id.home -> {
+                        parentFragmentManager.popBackStack()
+                        false
+                    }
+                    else -> true
+                }
+            }
+
+        }
+
+        menuHost.addMenuProvider(menuProvider, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     private fun setupToolbar() {
-        setHasOptionsMenu(true)
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbarPokemonDetail)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
     }
@@ -134,24 +191,12 @@ class PokemonDetailFragment : Fragment() {
                     PokemonColorUtils.getPokemonColor(pokemonInfo)
                 )
             )
-            val textColor = ContextCompat.getColor(
-                root.context,
-                PokemonColorUtils.getPokemonTextColor(pokemonInfo)
-            )
-            toolbarPokemonId.setTextColor(
-                ContextCompat.getColor(
-                    root.context,
-                    PokemonColorUtils.getPokemonTextColor(pokemonInfo)
-                )
-            )
             collapsingToolbarLayoutPokemonDetail.apply {
                 title = pokemonInfo.name.replaceFirstChar {
                     it.uppercase()
                 }
-                setCollapsedTitleTextColor(textColor)
-                setExpandedTitleColor(textColor)
             }
-            toolbarPokemonId.apply {
+            textViewPokemonId.apply {
                 text = pokemonInfo
                     .id
                     .toString()
@@ -159,49 +204,14 @@ class PokemonDetailFragment : Fragment() {
                     .prependIndent("#")
             }
 
-            // TODO : extract into functions and set loading placeholder
             imageLoader.loadImage(
                 url = Helpers.getImageUrl(pokemonInfo.id),
                 imageView = imageViewPokemonDetail
             )
+
+            appBarLayoutPokemonDetail.addOnOffsetChangedListener(appBarLayoutListener)
         }
 
-        binding.appBarLayoutPokemonDetail.addOnOffsetChangedListener(appBarLayoutListener)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-
-        val pokemonInfo: PokemonInfo? =
-            arguments?.getParcelable(POKEMON_CARD_INFO_ARGUMENT_KEY)
-
-        val iconTintColor = pokemonInfo?.let {
-            PokemonColorUtils.getPokemonIconTintColor(it)
-        } ?: R.color.white
-
-        val likedIconTintColor = pokemonInfo?.let {
-            PokemonColorUtils.getPokemonIconLikedTintColor(it)
-        } ?: R.color.red_500
-
-        setDrawableTint(
-            DrawableCompat.wrap(menu.findItem(R.id.menu_item_not_liked).icon),
-            iconTintColor
-        )
-        setDrawableTint(
-            DrawableCompat.wrap(menu.findItem(R.id.menu_item_liked).icon),
-            likedIconTintColor
-        )
-        binding.toolbarPokemonDetail.navigationIcon?.let { DrawableCompat.wrap(it) }?.let {
-            setDrawableTint(
-                it,
-                iconTintColor
-            )
-        }
-        setIconsVisibility(isLiked)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        binding.toolbarPokemonDetail.inflateMenu(R.menu.pokemon_detail_menu)
     }
 
     private fun setDrawableTint(
@@ -212,25 +222,6 @@ class PokemonDetailFragment : Fragment() {
             drawable,
             ContextCompat.getColor(requireContext(), tintColor)
         )
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_item_liked -> {
-                isLiked = false
-                activity?.invalidateOptionsMenu()
-                viewModel.updateLikedValue(_pokemonInfo.id, false)
-            }
-            R.id.menu_item_not_liked -> {
-                isLiked = true
-                activity?.invalidateOptionsMenu()
-                viewModel.updateLikedValue(_pokemonInfo.id, true)
-            }
-            android.R.id.home -> {
-                parentFragmentManager.popBackStack()
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun setIconsVisibility(isLiked: Boolean) {

@@ -20,6 +20,7 @@
         <entry key="app/src/main/res/drawable/pokemon_detail_tab_decorator_top.xml" value="0.124" />
         <entry key="app/src/main/res/drawable/pokemon_detail_tab_left.xml" value="0.124" />
         <entry key="app/src/main/res/drawable/pokemon_detail_tab_right.xml" value="0.124" />
+        <entry key="app/src/main/res/drawable/pokemon_type_pill.xml" value="0.224" />
         <entry key="app/src/main/res/drawable/recycler_view_divider.xml" value="0.1175" />
         <entry key="app/src/main/res/drawable/tab_indicator_raised.xml" value="0.1485" />
         <entry key="app/src/main/res/drawable/view_pager_state.xml" value="0.1485" />
@@ -28,8 +29,8 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1421875" />
         <entry key="app/src/main/res/layout/base_stat_row.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_blank.xml" value="0.28894927536231885" />
-        <entry key="app/src/main/res/layout/fragment_pokemon_card_list.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_pokemon_detail.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_pokemon_card_list.xml" value="0.18297101449275363" />
+        <entry key="app/src/main/res/layout/fragment_pokemon_detail.xml" value="0.18297101449275363" />
         <entry key="app/src/main/res/layout/fragment_pokemon_detail_about.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_pokemon_detail_base_stats.xml" value="0.22509057971014493" />
         <entry key="app/src/main/res/layout/fragment_pokemon_detail_evolution.xml" value="0.335" />

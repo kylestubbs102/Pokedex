@@ -18,6 +18,10 @@ interface PokedexRepository {
         isLiked: Boolean
     )
 
+    suspend fun getPokemonIsLiked(
+        id: Int
+    ): Flow<Boolean>
+
     suspend fun getEvolutionChain(
         id: Int,
     ): Flow<Resource<List<PokemonEvolution>>>

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".presentation.pokemondetail.evolution.PokemonDetailEvolutionFragment">
 
     <LinearLayout
@@ -15,11 +16,11 @@
 
         <TextView
             android:id="@+id/text_view_title"
+            style="@style/HeaderTextAppearance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="@string/text_view_evolution_chain"
-            style="@style/HeaderTextAppearance" />
+            android:text="@string/text_view_evolution_chain" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_evolution_list"

@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionInflater
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonCardListBinding
 import com.example.pokedex.domain.interfaces.ImageLoader
@@ -28,7 +29,7 @@ class PokemonListFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    private lateinit var pokemonListAdapter: PokemonListAdapter
+    private var pokemonListAdapter: PokemonListAdapter? = null
 
     private val imageLoader: ImageLoader by inject()
 
@@ -90,7 +91,7 @@ class PokemonListFragment : Fragment() {
         progressBarVisibility: Int,
         listToUpdate: List<PokemonInfo>,
     ) {
-        pokemonListAdapter.submitList(listToUpdate)
+        pokemonListAdapter?.submitList(listToUpdate)
 
         if (progressBarVisibility == View.GONE) {
             binding.progressBarBottom.visibility = progressBarVisibility
@@ -120,7 +121,6 @@ class PokemonListFragment : Fragment() {
     }
 
     private fun setupGridSpacingItemDecoration(): GridSpacingItemDecoration {
-        val spanCount = 2
         val verticalSpacing = resources
             .getDimension(R.dimen.pokemon_card_item_horizontal_margin_5dp)
             .toInt()
@@ -128,7 +128,7 @@ class PokemonListFragment : Fragment() {
             .getDimension(R.dimen.pokemon_card_item_vertical_margin_5dp)
             .toInt()
         return GridSpacingItemDecoration(
-            spanCount = spanCount,
+            spanCount = VERTICAL_SPAN_COUNT,
             verticalSpacing = verticalSpacing,
             horizontalSpacing = horizontalSpacing
         )
@@ -137,6 +137,12 @@ class PokemonListFragment : Fragment() {
     private fun cardToDetailFragmentTransaction(pokemonInfo: PokemonInfo) {
         val pokemonDetailFragment = PokemonDetailFragment.newInstance(pokemonInfo)
         requireActivity().supportFragmentManager.commit {
+            setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out
+            )
             replace(R.id.fragment_container_view_main, pokemonDetailFragment)
             setReorderingAllowed(true)
             addToBackStack(id.toString())
@@ -145,6 +151,7 @@ class PokemonListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        pokemonListAdapter = null
         _binding = null
     }
 
