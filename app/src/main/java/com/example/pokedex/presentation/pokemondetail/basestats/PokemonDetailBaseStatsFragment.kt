@@ -23,7 +23,7 @@ class PokemonDetailBaseStatsFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    private lateinit var baseStatsAdapter: BaseStatsAdapter
+    private var baseStatsAdapter: BaseStatsAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -83,7 +83,7 @@ class PokemonDetailBaseStatsFragment : Fragment() {
             value = baseStatList.sumOf { it.value }
         )
 
-        baseStatsAdapter.submitList(newList)
+        baseStatsAdapter?.submitList(newList)
     }
 
 
@@ -93,6 +93,7 @@ class PokemonDetailBaseStatsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        baseStatsAdapter = null
         _binding = null
     }
 

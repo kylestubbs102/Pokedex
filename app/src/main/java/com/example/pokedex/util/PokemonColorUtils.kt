@@ -29,14 +29,6 @@ object PokemonColorUtils {
         }
     }
 
-    fun getPokemonTextColor(pokemonInfo: PokemonInfo): Int {
-        return when (getType(pokemonInfo)) {
-            // TODO : see all types that need to change color, also for func below
-            "ice" -> R.color.black
-            else -> R.color.white
-        }
-    }
-
     fun getPokemonIconLikedTintColor(pokemonInfo: PokemonInfo): Int {
         return when (getType(pokemonInfo)) {
             "red", "pink" -> R.color.black
@@ -44,15 +36,8 @@ object PokemonColorUtils {
         }
     }
 
-    // also used for the not liked icon
-    fun getPokemonIconTintColor(pokemonInfo: PokemonInfo): Int {
-        return when (getType(pokemonInfo)) {
-            "white", "yellow" -> R.color.black
-            else -> R.color.white
-        }
-    }
-
     private fun getType(pokemonInfo: PokemonInfo): String {
+        // we just take the first type if there are two types
         return when (pokemonInfo.types.size) {
             0 -> ""
             else -> pokemonInfo.types[0]

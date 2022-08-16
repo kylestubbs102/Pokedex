@@ -128,6 +128,11 @@ class PokedexRepositoryImpl(
         pokedexDao.updatePokemonIsLiked(id, isLiked)
     }
 
+    override suspend fun getPokemonIsLiked(id: Int): Flow<Boolean> = flow {
+        val isLiked = pokedexDao.selectPokemonIsLikedWithId(id) ?: false
+        emit(isLiked)
+    }
+
     override suspend fun getEvolutionChain(id: Int): Flow<Resource<List<PokemonEvolution>>> =
         flow {
             emit(Resource.Loading())

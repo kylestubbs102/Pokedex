@@ -20,6 +20,9 @@ interface PokedexDao {
     @Query("SELECT * FROM PokemonInfoEntity WHERE id = :id")
     suspend fun selectPokemonInfoWithId(id: Int): PokemonInfoEntity?
 
+    @Query("SELECT is_liked FROM PokemonInfoEntity WHERE id = :id")
+    suspend fun selectPokemonIsLikedWithId(id: Int): Boolean?
+
     @Query("UPDATE PokemonInfoEntity SET is_liked = :isLiked WHERE id = :id")
     suspend fun updatePokemonIsLiked(id: Int, isLiked: Boolean)
 

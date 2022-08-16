@@ -43,6 +43,7 @@
     <color name="steel">#FFB8B8CE</color>
     <color name="unknown">#FF759F91</color>
     <color name="water">#FF708FE9</color>
+    <color name="pokemon_card_pill_color">#33F5F5F5</color>
 
 
 </resources>

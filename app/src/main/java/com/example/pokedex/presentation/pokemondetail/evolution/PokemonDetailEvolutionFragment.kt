@@ -30,7 +30,7 @@ class PokemonDetailEvolutionFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    private lateinit var pokemonDetailEvolutionAdapter: PokemonDetailEvolutionAdapter
+    private var pokemonDetailEvolutionAdapter: PokemonDetailEvolutionAdapter? = null
 
     private val imageLoader: ImageLoader by inject()
 
@@ -77,7 +77,7 @@ class PokemonDetailEvolutionFragment : Fragment() {
                                     return@collect
                                 }
 
-                                pokemonDetailEvolutionAdapter.submitList(pokemonEvolutionState.data)
+                                pokemonDetailEvolutionAdapter?.submitList(pokemonEvolutionState.data)
                             }
                             is Resource.Error -> {
                                 // TODO : error handled in parent fragment
@@ -127,6 +127,7 @@ class PokemonDetailEvolutionFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        pokemonDetailEvolutionAdapter = null
         _binding = null
     }
 
