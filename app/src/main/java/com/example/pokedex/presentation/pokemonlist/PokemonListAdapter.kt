@@ -1,6 +1,7 @@
 package com.example.pokedex.presentation.pokemonlist
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -38,15 +39,13 @@ class PokemonListAdapter(
             pokemonInfo.let {
                 setCardText(it)
                 setCardColors(it)
+                setCardTypes(it)
                 setupImageLoader(it)
                 setupOnClickListener(it)
             }
         }
 
-        private fun setCardColors(
-            pokemonInfo: PokemonInfo
-        ) {
-
+        private fun setCardColors(pokemonInfo: PokemonInfo) {
             binding.apply {
                 root.setCardBackgroundColor(
                     ContextCompat.getColor(
@@ -73,9 +72,30 @@ class PokemonListAdapter(
             }
         }
 
-        private fun setupImageLoader(
-            pokemonInfo: PokemonInfo
-        ) {
+        private fun setCardTypes(pokemonInfo: PokemonInfo) {
+            binding.apply {
+                when (pokemonInfo.types.size) {
+                    0 -> {
+                        textViewType1.visibility = View.INVISIBLE
+                        textViewType2.visibility = View.INVISIBLE
+                    }
+                    1 -> {
+                        textViewType1.text =
+                            pokemonInfo.types[0].replaceFirstChar { it.uppercase() }
+                        textViewType2.visibility = View.INVISIBLE
+                    }
+                    2 -> {
+                        textViewType1.text =
+                            pokemonInfo.types[0].replaceFirstChar { it.uppercase() }
+                        textViewType2.text =
+                            pokemonInfo.types[1].replaceFirstChar { it.uppercase() }
+                    }
+                    else -> throw IndexOutOfBoundsException("PokemonInfo contains more than two types.")
+                }
+            }
+        }
+
+        private fun setupImageLoader(pokemonInfo: PokemonInfo) {
             binding.apply {
                 imageLoader.loadImage(
                     url = Helpers.getImageUrl(pokemonInfo.id),
@@ -89,9 +109,7 @@ class PokemonListAdapter(
             }
         }
 
-        private fun setupOnClickListener(
-            pokemonInfo: PokemonInfo
-        ) {
+        private fun setupOnClickListener(pokemonInfo: PokemonInfo) {
             binding.apply {
                 root.setOnClickListener {
                     cardToDetailFragmentTransaction(pokemonInfo)
