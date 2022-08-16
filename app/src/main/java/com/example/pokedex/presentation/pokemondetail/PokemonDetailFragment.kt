@@ -20,6 +20,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonDetailBinding
 import com.example.pokedex.domain.interfaces.ImageLoader
+import com.example.pokedex.domain.model.PokemonAboutInfo
 import com.example.pokedex.domain.model.PokemonInfo
 import com.example.pokedex.util.Helpers
 import com.example.pokedex.util.PokemonColorUtils
@@ -60,6 +61,8 @@ class PokemonDetailFragment : Fragment() {
         return binding.root
     }
 
+    // TODO : remove hardcoded types
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -74,6 +77,7 @@ class PokemonDetailFragment : Fragment() {
                                 is Resource.Success -> {
                                     binding.progressBarPokemonDetail.visibility = View.GONE
                                     activity?.invalidateOptionsMenu()
+                                    pokemonAboutInfo.data?.let { setupGenus(it) }
                                 }
                                 is Resource.Error -> {
                                     showErrorScreen()
@@ -109,6 +113,12 @@ class PokemonDetailFragment : Fragment() {
             showErrorScreen()
         }
 
+    }
+
+    private fun setupGenus(pokemonAboutInfo: PokemonAboutInfo) {
+        binding.apply {
+            textViewGenus.text = pokemonAboutInfo.genus
+        }
     }
 
     private fun setupMenuProvider() {
@@ -212,6 +222,27 @@ class PokemonDetailFragment : Fragment() {
             appBarLayoutPokemonDetail.addOnOffsetChangedListener(appBarLayoutListener)
         }
 
+        setupTypes(pokemonInfo)
+    }
+
+    private fun setupTypes(pokemonInfo: PokemonInfo) {
+        binding.apply {
+            when (pokemonInfo.types.size) {
+                0 -> {
+                    textViewType1.visibility = View.INVISIBLE
+                    textViewType2.visibility = View.INVISIBLE
+                }
+                1 -> {
+                    textViewType1.text = pokemonInfo.types[0].replaceFirstChar { it.uppercase() }
+                    textViewType2.visibility = View.INVISIBLE
+                }
+                2 -> {
+                    textViewType1.text = pokemonInfo.types[0].replaceFirstChar { it.uppercase() }
+                    textViewType2.text = pokemonInfo.types[1].replaceFirstChar { it.uppercase() }
+                }
+                else -> throw IndexOutOfBoundsException("PokemonInfo contains more than two types.")
+            }
+        }
     }
 
     private fun setDrawableTint(

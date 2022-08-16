@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.TransitionInflater
 import com.example.pokedex.R
 import com.example.pokedex.databinding.FragmentPokemonCardListBinding
 import com.example.pokedex.domain.interfaces.ImageLoader
