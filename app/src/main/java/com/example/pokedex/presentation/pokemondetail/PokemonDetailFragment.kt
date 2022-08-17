@@ -49,7 +49,7 @@ class PokemonDetailFragment : Fragment() {
             val newImageAndIdAlpha =
                 (1.0f - abs(verticalOffset / appBarLayout.totalScrollRange.toFloat()))
             binding.imageViewPokemonDetail.alpha = newImageAndIdAlpha
-            binding.textViewPokemonId.alpha = newImageAndIdAlpha
+            binding.constraintLayoutTypesAndGenus.alpha = newImageAndIdAlpha
         }
 
     override fun onCreateView(
