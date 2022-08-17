@@ -61,8 +61,6 @@ class PokemonDetailFragment : Fragment() {
         return binding.root
     }
 
-    // TODO : remove hardcoded types
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
