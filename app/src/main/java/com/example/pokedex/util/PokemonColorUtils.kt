@@ -31,7 +31,7 @@ object PokemonColorUtils {
 
     fun getPokemonIconLikedTintColor(pokemonInfo: PokemonInfo): Int {
         return when (getType(pokemonInfo)) {
-            "red", "pink" -> R.color.black
+            "fire" -> R.color.black
             else -> R.color.red_500
         }
     }
