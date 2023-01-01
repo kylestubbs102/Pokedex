@@ -17,4 +17,8 @@
     <string name="text_view_no_evolution_chain">No evolution chain found.</string>
     <string name="text_view_min_level">Lvl %1d</string>
     <string name="text_view_type_defenses">Type defenses</string>
+    <string name="extended_fab_search">Search</string>
+    <string name="extended_fab_all_gens">All Gens</string>
+    <string name="extended_fab_all_types">All Types</string>
+    <string name="extended_fab_favorite_pokemon">Favorite Pokemon</string>
 </resources>

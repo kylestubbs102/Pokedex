@@ -45,5 +45,6 @@
     <color name="water">#FF708FE9</color>
     <color name="pokemon_card_pill_color">#33F5F5F5</color>
 
+    <color name="filter_fab_color">#FF6C79DB</color>
 
 </resources>

@@ -1,5 +1,7 @@
 package com.example.pokedex.presentation.pokemonlist
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokedex.domain.interfaces.PokedexRepository
@@ -21,6 +23,15 @@ class PokemonListViewModel(
     private val _pokemonInfoListState = MutableStateFlow(PokemonListState())
     val pokemonInfoListState: StateFlow<PokemonListState>
         get() = _pokemonInfoListState
+
+    // TODO : refactor to include enum class for all fab types (ex: when search is clicked don't disable modal)
+    private val _modalIsActive = MutableLiveData(false)
+    val modalIsActive: LiveData<Boolean>
+        get() = _modalIsActive
+
+    fun updateModalState(isActive: Boolean) {
+        _modalIsActive.postValue(isActive)
+    }
 
     fun fetchPokemonList(offset: Int) {
         viewModelScope.launch {

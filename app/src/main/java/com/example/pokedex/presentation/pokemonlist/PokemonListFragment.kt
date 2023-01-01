@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
@@ -38,7 +39,9 @@ class PokemonListFragment : Fragment() {
     ): View {
         _binding = FragmentPokemonCardListBinding.inflate(inflater, container, false)
 
+        setupFABs()
         setupRecyclerView()
+        wireViewModel()
 
         return binding.root
     }
@@ -65,6 +68,16 @@ class PokemonListFragment : Fragment() {
         }
     }
 
+    private fun setupFABs() {
+        with(binding) {
+            filterFab.setOnClickListener {
+                viewModel.modalIsActive.value?.let {
+                    viewModel.updateModalState(it.not())
+                }
+            }
+        }
+    }
+
     private fun setupRecyclerView() {
         val scrollListener = setupOnScrollListener()
 
@@ -83,6 +96,28 @@ class PokemonListFragment : Fragment() {
             setHasFixedSize(true)
             addItemDecoration(gridSpacingItemDecoration)
             addOnScrollListener(scrollListener)
+        }
+    }
+
+    private fun wireViewModel() {
+        viewModel.modalIsActive.observe(viewLifecycleOwner) {
+            with(binding) {
+                if (it == true) {
+                    filterFab.setImageResource(R.drawable.ic_baseline_close_24)
+                    modalBackground.isVisible = true
+                    searchFab.isVisible = true
+                    favoriteFab.isVisible = true
+                    genFab.isVisible = true
+                    typeFab.isVisible = true
+                } else {
+                    filterFab.setImageResource(R.drawable.ic_sliders_solid)
+                    modalBackground.isVisible = false
+                    searchFab.isVisible = false
+                    favoriteFab.isVisible = false
+                    genFab.isVisible = false
+                    typeFab.isVisible = false
+                }
+            }
         }
     }
 
