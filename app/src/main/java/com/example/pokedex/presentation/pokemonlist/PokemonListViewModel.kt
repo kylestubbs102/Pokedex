@@ -16,10 +16,6 @@ class PokemonListViewModel(
     private val pokedexRepository: PokedexRepository
 ) : ViewModel() {
 
-    init {
-        fetchPokemonList(offset = 0)
-    }
-
     private val _pokemonInfoListState = MutableStateFlow(PokemonListState())
     val pokemonInfoListState: StateFlow<PokemonListState>
         get() = _pokemonInfoListState
@@ -28,6 +24,11 @@ class PokemonListViewModel(
     private val _modalIsActive = MutableLiveData(false)
     val modalIsActive: LiveData<Boolean>
         get() = _modalIsActive
+
+    // init has to be after _pokemonInfoListState in order to avoid NPE when fetch list call is made
+    init {
+        fetchPokemonList(offset = 0)
+    }
 
     fun updateModalState(isActive: Boolean) {
         _modalIsActive.postValue(isActive)
