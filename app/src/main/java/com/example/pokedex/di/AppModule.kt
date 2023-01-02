@@ -30,7 +30,7 @@ val appModule = module {
     single { GetPokemonAboutInfoUseCase(get()) }
 
     viewModel { PokemonDetailViewModel(get()) }
-    viewModel { PokemonListViewModel(get()) }
+    viewModel { PokemonListViewModel(get(), get()) }
     viewModel { PokemonDetailBaseStatsViewModel(get()) }
     viewModel { PokemonDetailEvolutionViewModel(get()) }
 

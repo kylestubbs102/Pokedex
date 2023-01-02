@@ -71,9 +71,20 @@ class PokemonListFragment : Fragment() {
     private fun setupFABs() {
         with(binding) {
             filterFab.setOnClickListener {
-                viewModel.modalIsActive.value?.let {
-                    viewModel.updateModalState(it.not())
-                }
+                val newState =
+                    if (viewModel.filterViewState.value is FilterViewState.DefaultState) {
+                        FilterViewState.ModalActive
+                    } else {
+                        FilterViewState.DefaultState
+                    }
+                viewModel.updateFilterState(newState)
+                // TODO : add action here to clear favorites
+            }
+            favoriteFab.setOnClickListener {
+                viewModel.updateFilterState(FilterViewState.FilterApplied(FilterType.FAVORITE))
+
+                // TODO : update here to use actions with common interface for each filter
+                viewModel.favoriteButtonClicked(true)
             }
         }
     }
@@ -100,22 +111,32 @@ class PokemonListFragment : Fragment() {
     }
 
     private fun wireViewModel() {
-        viewModel.modalIsActive.observe(viewLifecycleOwner) {
+        viewModel.filterViewState.observe(viewLifecycleOwner) {
             with(binding) {
-                if (it == true) {
-                    filterFab.setImageResource(R.drawable.ic_baseline_close_24)
-                    modalBackground.isVisible = true
-                    searchFab.isVisible = true
-                    favoriteFab.isVisible = true
-                    genFab.isVisible = true
-                    typeFab.isVisible = true
+                val fabDrawable = if (it is FilterViewState.DefaultState) {
+                    R.drawable.ic_sliders_solid
                 } else {
-                    filterFab.setImageResource(R.drawable.ic_sliders_solid)
-                    modalBackground.isVisible = false
-                    searchFab.isVisible = false
-                    favoriteFab.isVisible = false
-                    genFab.isVisible = false
-                    typeFab.isVisible = false
+                    R.drawable.ic_baseline_close_24
+                }
+
+                when (it) {
+                    is FilterViewState.ModalActive -> {
+                        filterFab.setImageResource(fabDrawable)
+                        modalBackground.isVisible = true
+                        searchFab.isVisible = true
+                        favoriteFab.isVisible = true
+                        genFab.isVisible = true
+                        typeFab.isVisible = true
+                    }
+                    is FilterViewState.DefaultState,
+                    is FilterViewState.FilterApplied -> {
+                        filterFab.setImageResource(fabDrawable)
+                        modalBackground.isVisible = false
+                        searchFab.isVisible = false
+                        favoriteFab.isVisible = false
+                        genFab.isVisible = false
+                        typeFab.isVisible = false
+                    }
                 }
             }
         }
