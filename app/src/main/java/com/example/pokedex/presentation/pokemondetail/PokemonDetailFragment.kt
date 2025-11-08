@@ -128,10 +128,12 @@ class PokemonDetailFragment : Fragment() {
                 val likedIconTintColor =
                     PokemonColorUtils.getPokemonIconLikedTintColor(_pokemonInfo)
 
-                setDrawableTint(
-                    DrawableCompat.wrap(menu.findItem(R.id.menu_item_liked).icon),
-                    likedIconTintColor
-                )
+                menu.findItem(R.id.menu_item_liked).icon?.let {
+                    setDrawableTint(
+                        DrawableCompat.wrap(it),
+                        likedIconTintColor
+                    )
+                }
                 setIconsVisibility(_pokemonInfo.isLiked)
             }
 
